@@ -2,7 +2,6 @@ const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
 // The `/api/products` endpoint
-
 // get all products
 router.get('/', (req, res) => {
   // find all products
@@ -13,7 +12,7 @@ router.get('/', (req, res) => {
       'product_name',
       'price',
       'stock',
-      'catgory_id',
+      'category_id',
       // '',
       // '',
       // '',
@@ -46,7 +45,7 @@ router.get('/:id', (req, res) => {
     },
     attributes: [
       'id',
-      'praduct_name',
+      'product_name',
       'price',
       'stock',
       'category_id',
@@ -55,19 +54,21 @@ router.get('/:id', (req, res) => {
     include: [
       {
         model: Category,
-        attributes: ['id', 'tag_name']
+        attributes: ['id', 'category_name']
       },
       {
         model: Tag,
         attributes: ['id', 'tag_name']
       },
     ]
+  
   })
     .then(productData => res.json(productData))
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
     });
+  });
 
   // create new product
   router.post('/', (req, res) => {
@@ -145,10 +146,11 @@ router.get('/:id', (req, res) => {
 
   router.delete('/:id', (req, res) => {
     // delete one product by its `id` value
-    where: {
+    Product.destroy ({
+      where: {
       id: req.params.id
     }
-  })
+  })  
     .then(productData => {
       if (!productData) {
         res.status(404).json({ message: 'Not Found' });
